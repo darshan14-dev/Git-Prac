@@ -1,1 +1,15 @@
-hey there!!!!!!!
+//Merge
+
+1)  ------> create a pull request
+            -> and then merge using GitHub UI
+
+2) -------> if you performed merge on your local device and then push to remote,
+            it wont create a pr
+
+
+ main:    A --- B
+ feature:       C --- D
+
+                                 ---->       main:    A --- B -------- M
+                                                              \       /
+                                           feature:            C --- D
