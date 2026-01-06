@@ -1,151 +1,192 @@
-//Merge
 
-1)  ------> create a pull request
-            -> and then merge using GitHub UI
+===============================
+GIT WORKFLOWS: MERGE, REBASE, SQUASH & REVERT
+===============================
 
-2) -------> if you performed merge on your local device and then push to remote,
-            it wont create a pr
+--------------------------------
+MERGE
+--------------------------------
 
-3)--------> solving merge conflicts
-           First, make sure you’re on your branch:  git checkout feature
-
-           Then, fetch the latest commits from the remote: git fetch origin
-
-           To integrate changes from main into your branch, either merge or rebase:
-           Merge approach:  git merge origin/main
+1) Create a Pull Request (PR)
+--------------------------------
+→ Create a pull request
+→ Merge using GitHub UI
 
 
-           If there are conflicts, edit the conflicted files,
-           remove Git markers (<<<<<<<, =======, >>>>>>>), then:
-
-           git add <file>
-           git commit
-
-
-           Rebase approach (cleaner history):   git rebase origin/main
+2) Local Merge (No PR)
+--------------------------------
+→ If you perform a merge on your local machine and push to remote,
+  it will NOT create a Pull Request.
 
 
-           Resolve conflicts if they appear:
-           git add <file>
-           git rebase --continue
+3) Solving Merge Conflicts
+--------------------------------
+
+Step 1: Make sure you are on your feature branch
+--------------------------------
+git checkout feature
+
+Step 2: Fetch latest changes from remote
+--------------------------------
+git fetch origin
+
+Step 3: Integrate changes from main into your branch
+--------------------------------
+
+MERGE approach:
+git merge origin/main
+
+If conflicts occur:
+- Open conflicted files
+- Remove Git markers:
+  <<<<<<<
+  =======
+  >>>>>>>
+
+Then run:
+git add <file>
+git commit
 
 
-           After successfully integrating changes, push your branch:
-           After merge:
+REBASE approach (cleaner history):
+git rebase origin/main
 
-           git push origin feature
-
-           After rebase (history changed → force push):
-
-           git push --force-with-lease
-
- main:    A --- B
- feature:       C --- D
-
-                                 ---->       main:    A --- B -------- M
-                                                              \       /
-                                           feature:            C --- D
-
-Git creates a new merge commit (unless it’s a fast-forward merge)
-This merge commit has two parents:
-   -the previous main commit
-   -the last commit of the feature branch
-So none of the old commits are lost.
+If conflicts occur:
+git add <file>
+git rebase --continue
 
 
+Step 4: Push your branch
+--------------------------------
 
-//Rebase
+After MERGE:
+git push origin feature
 
-keeps the commit history linear ,old commits are rewrote and replaces they are still
-stored in "Ref-Log" for 30-90 days before cleanup you can retrive them back
+After REBASE (history changed → force push required):
+git push --force-with-lease
+
+
+MERGE COMMIT STRUCTURE
+--------------------------------
+
+main:     A --- B
+feature:        C --- D
+
+After merge:
+
+main:     A --- B -------- M
+                   \     /
+feature:            C --- D
+
+• Git creates a NEW merge commit (unless fast-forward)
+• Merge commit has TWO parents:
+  - Previous main commit
+  - Last commit of feature branch
+• NO old commits are lost
+
+
+--------------------------------
+REBASE
+--------------------------------
+
+• Keeps commit history LINEAR
+• Old commits are REWRITTEN
+• Original commits are still stored in REFLOG
+  (30–90 days before cleanup)
+
+Example:
 
 main:     A --- B --- C
-                           \
-feature:                     D' --- E'
+                          \
+feature:                    D' --- E'
 
 
-🔁 Rebased wrong features – what to do (quick guide)
-1️⃣ Rebased locally (NOT pushed) ✅
+--------------------------------
+REBASED WRONG FEATURES – QUICK GUIDE
+--------------------------------
 
-👉 Undo easily
+1️⃣ Rebased LOCALLY (NOT pushed) ✅
+--------------------------------
+Undo easily:
 
 git reflog
-git reset --hard HEAD@{n}   # pre-rebase state
-
+git reset --hard HEAD@{n}
 
 ✔ Branch restored
-✔ Old commits back
+✔ Old commits recovered
 
-2️⃣ Rebased and already pushed ⚠️
-A) Only you use the branch
+
+2️⃣ Rebased AND ALREADY PUSHED ⚠️
+
+A) Only YOU use the branch
+--------------------------------
 git push --force
 
+✔ Safe if no one else pulled
 
-✔ OK if no one else pulled
 
-B) Shared branch ❌ (best practice)
+B) SHARED branch ❌ (Best Practice)
+--------------------------------
+DO NOT force push
 
-Do NOT force push
-
-Undo locally using reflog
-
-Fix using new commits or revert
-
+Undo locally using reflog:
 git reflog
 git reset --hard <pre-rebase-hash>
 git push
 
-
-or
-
+OR revert specific commits:
 git revert <bad-commit>
-
 
 ✔ Safe for team
 ✔ History preserved
 
-3️⃣ Want to keep some commits
 
-👉 Use interactive rebase
+3️⃣ Want to KEEP some commits
+--------------------------------
+Use interactive rebase:
 
 git rebase -i main
 
+Options:
+- drop   → remove commit
+- edit   → modify commit
+- squash → combine commits
 
-drop → remove wrong commit
 
-edit → modify commit
+4️⃣ Reflog EXPIRED ❌ (Worst Case)
+--------------------------------
+• No branch or tag exists
+• Garbage Collection (GC) ran
 
-squash → combine commits
+👉 Commits are PERMANENTLY LOST
 
-4️⃣ Reflog expired ❌ (worst case)
 
-No branch/tag
-
-GC ran
-
-👉 Commits are permanently lost
-
-🔐 Golden safety rule
-
+🔐 GOLDEN SAFETY RULE
+--------------------------------
 Before rebasing important work:
 
 git branch backup-feature
 
 
+--------------------------------
+SQUASH
+--------------------------------
 
-------------squah------------------
-# 1. Go to feature branch
+1️⃣ Squash Commits using Interactive Rebase
+--------------------------------
+
+Step 1: Go to feature branch
 git checkout feature
 
-# 2. Start interactive rebase
+Step 2: Start interactive rebase
 git rebase -i HEAD~N
 
 Example (last 3 commits):
 git rebase -i HEAD~3
 
 
-
 🧠 What happens next
+--------------------------------
 
 Git opens an editor:
 
@@ -154,58 +195,136 @@ pick b2 Fix login bug
 pick c3 Update login UI
 
 
-Change it to:
+Change to:
 
 pick a1 Add login page
 squash b2 Fix login bug
 squash c3 Update login UI
 
-
-(or s instead of squash)
+(or use 's' instead of 'squash')
 
 Save & close.
 
-📝 Commit message screen
 
-Git now asks for a single commit message:
+📝 Commit Message Screen
+--------------------------------
+Git asks for a SINGLE commit message:
 
 Add login page with bug fixes and UI updates
 
+Save → Squash completed ✅
 
-Save → squash done ✅
 
-3️⃣ How squash works internally (VERY IMPORTANT)
-🔴 Before squash
+3️⃣ How Squash Works INTERNALLY (VERY IMPORTANT)
+--------------------------------
+
+🔴 Before Squash:
 A --- B --- C --- D
 
-🟢 After squash
+🟢 After Squash:
 A --- E
 
+• Commit E contains changes of B + C + D
+• Commits B, C, D are GONE
+• New commit hash is created
+• History is REWRITTEN
 
-E contains changes of B + C + D
+👉 Squash = delete old commits + create ONE new commit
 
-B, C, D commits are GONE
 
-New commit hash is created
+4️⃣ Squash While Merging (Alternative)
+--------------------------------
 
-History is rewritten
-
-👉 Squash = delete old commits + create one new commit
-
-4️⃣ Another way: Squash while merging
-✅ Command
+Commands:
 git checkout main
 git merge --squash feature
 git commit
 
-What this does:
+What happens:
+• Takes ALL changes from feature
+• Does NOT bring commit history
+• Creates ONE new commit on main
 
-Takes all changes from feature
+📌 Feature branch commits STILL exist on feature branch
 
-Does NOT bring its commit history
 
-Creates one new commit on main
+--------------------------------
+REVERT
+--------------------------------
 
-📌 Feature branch commits still exist on the feature branch.
+Basic Command:
+--------------------------------
+git revert <commit>
+
+
+Example History:
+--------------------------------
+A --- B --- C --- D (HEAD)
+
+Run:
+git revert B
+
+Result:
+A --- B --- C --- D --- R (HEAD)
+
+• R is a NEW commit
+• R reverses changes of commit B
+• Commit B is NOT removed
+• HEAD stays at latest commit
+
+
+--------------------------------
+REVERTING A MERGE COMMIT
+--------------------------------
+
+Command:
+git revert -m 1 <merge-commit>
+
+What -m 1 means:
+--------------------------------
+git revert -m 1 M
+
+Verify using:
+git show M
+
+You will see:
+parent1: C
+parent2: F2
+
+Meaning:
+• Keep parent 1 (main branch)
+• Undo changes from parent 2 (feature branch)
+
+⚠️ Without -m option:
+error: commit is a merge but no -m option was given
+
+
+--------------------------------
+OTHER REVERT OPTIONS
+--------------------------------
+
+• Revert multiple commits:
+git revert <commit1> <commit2> ...
+
+• Revert a range:
+git revert <oldest-commit>^..<newest-commit>
+
+
+--------------------------------
+REVERT CONFLICT RESOLUTION
+--------------------------------
+
+• Revert can cause conflicts (like merge)
+• Resolve conflicts manually
+• Then run:
+git revert --continue
+
+
+--------------------------------
+UNDO LATEST COMMIT
+--------------------------------
+
+Shortcut:
+git revert HEAD
 
 
