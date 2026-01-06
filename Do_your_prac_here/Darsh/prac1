@@ -45,3 +45,21 @@
                                  ---->       main:    A --- B -------- M
                                                               \       /
                                            feature:            C --- D
+
+Git creates a new merge commit (unless it’s a fast-forward merge)
+This merge commit has two parents:
+   -the previous main commit
+   -the last commit of the feature branch
+So none of the old commits are lost.
+
+//Rebase
+
+keeps the commit history linear ,old commits are rewrote and replaces they are still
+stored in "Ref-Log" for 30-90 days before cleanup you can retrive them back
+
+main:     A --- B --- C
+                           \
+feature:                     D' --- E'
+
+
+
