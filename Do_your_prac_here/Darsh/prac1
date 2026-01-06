@@ -131,3 +131,7 @@ Before rebasing important work:
 
 git branch backup-feature
 
+
+
+------------squah------------------
+add squash commands here
