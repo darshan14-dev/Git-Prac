@@ -6,6 +6,38 @@
 2) -------> if you performed merge on your local device and then push to remote,
             it wont create a pr
 
+3)--------> solving merge conflicts
+           First, make sure you’re on your branch:  git checkout feature
+
+           Then, fetch the latest commits from the remote: git fetch origin
+
+           To integrate changes from main into your branch, either merge or rebase:
+           Merge approach:  git merge origin/main
+
+
+           If there are conflicts, edit the conflicted files,
+           remove Git markers (<<<<<<<, =======, >>>>>>>), then:
+
+           git add <file>
+           git commit
+
+
+           Rebase approach (cleaner history):   git rebase origin/main
+
+
+           Resolve conflicts if they appear:
+           git add <file>
+           git rebase --continue
+
+
+           After successfully integrating changes, push your branch:
+           After merge:
+
+           git push origin feature
+
+           After rebase (history changed → force push):
+
+           git push --force-with-lease
 
  main:    A --- B
  feature:       C --- D
