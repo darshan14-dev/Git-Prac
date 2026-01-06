@@ -52,6 +52,8 @@ This merge commit has two parents:
    -the last commit of the feature branch
 So none of the old commits are lost.
 
+
+
 //Rebase
 
 keeps the commit history linear ,old commits are rewrote and replaces they are still
@@ -62,4 +64,70 @@ main:     A --- B --- C
 feature:                     D' --- E'
 
 
+🔁 Rebased wrong features – what to do (quick guide)
+1️⃣ Rebased locally (NOT pushed) ✅
+
+👉 Undo easily
+
+git reflog
+git reset --hard HEAD@{n}   # pre-rebase state
+
+
+✔ Branch restored
+✔ Old commits back
+
+2️⃣ Rebased and already pushed ⚠️
+A) Only you use the branch
+git push --force
+
+
+✔ OK if no one else pulled
+
+B) Shared branch ❌ (best practice)
+
+Do NOT force push
+
+Undo locally using reflog
+
+Fix using new commits or revert
+
+git reflog
+git reset --hard <pre-rebase-hash>
+git push
+
+
+or
+
+git revert <bad-commit>
+
+
+✔ Safe for team
+✔ History preserved
+
+3️⃣ Want to keep some commits
+
+👉 Use interactive rebase
+
+git rebase -i main
+
+
+drop → remove wrong commit
+
+edit → modify commit
+
+squash → combine commits
+
+4️⃣ Reflog expired ❌ (worst case)
+
+No branch/tag
+
+GC ran
+
+👉 Commits are permanently lost
+
+🔐 Golden safety rule
+
+Before rebasing important work:
+
+git branch backup-feature
 
