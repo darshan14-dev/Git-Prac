@@ -1,6 +1,6 @@
 
 ===============================
-GIT WORKFLOWS: MERGE, REBASE, SQUASH & REVERT
+GIT WORKFLOWS: MERGE, REBASE, SQUASH & REVERT , RESET
 ===============================
 
 --------------------------------
@@ -328,3 +328,277 @@ Shortcut:
 git revert HEAD
 
 
+
+--------------------------------
+RESET
+--------------------------------
+
+
+| Command                 | Effect                            |
+| ----------------------- | --------------------------------- |
+| `git reset --soft`      | Keeps changes **staged**          |
+| `git reset` / `--mixed` | Moves changes to **unstaged**     |
+| `git reset --hard`      | Deletes staged + unstaged changes |
+
+
+
+# GIT RESET
+
+**Command:**
+```
+git reset [--soft | --mixed | --hard]
+```
+**Overview:**
+
+* `git reset` moves **HEAD** to another commit.
+* It can affect:
+
+  * **HEAD** (commit pointer)
+  * **Staging Area** (index)
+  * **Working Directory** (files)
+* Behavior depends on the mode used.
+
+---
+
+# GIT CORE CONCEPT – 3 AREAS
+
+```
+Working Directory → Staging Area → Repository
+```
+
+* **Working Directory:** Where you edit files.
+* **Staging Area:** Files prepared for commit.
+* **Repository:** Committed history.
+
+---
+
+# RESET MODES (VERY IMPORTANT)
+
+### 1. --soft
+
+**Command:**
+```
+git reset --soft
+```
+**Effect:**
+
+* Moves HEAD only
+* Commits after are removed
+* Changes remain **STAGED**
+
+**Use when:**
+* Fixing commit message
+* Squashing commits
+
+---
+
+### 2. --mixed (DEFAULT)
+
+**Command:**
+```
+git reset
+```
+or
+```
+git reset --mixed
+```
+**Effect:**
+* Moves HEAD
+* Clears **staging area**
+* Changes remain in **working directory (UNSTAGED)**
+
+**Use when:**
+* Reorganizing what goes into commit
+
+---
+### 3. --hard (DANGEROUS)
+
+**Command:**
+```
+git reset --hard
+```
+**Effect:**
+* Moves HEAD
+* Deletes commits after
+* Deletes **all staged + unstaged changes**
+
+**Use when:**
+* Local cleanup
+  ❌ **Never on shared branches**
+
+---
+
+# SCENARIOS
+
+### Scenario 1: Unstage One File
+
+**Command:**
+```
+git reset HEAD file.txt
+```
+**Result:**
+* File removed from staging
+* File changes preserved
+
+---
+
+### Scenario 2: Unstage All Files
+**Command:**
+```
+git reset
+```
+or
+```
+git reset HEAD
+```
+**Result:**
+* All staged files unstaged
+* No commits deleted
+* No file changes lost
+
+---
+
+### Scenario 3: Undo Last Commit (Keep Changes Staged)
+**Command:**
+```
+git reset --soft HEAD~1
+```
+**Result:**
+* Last commit deleted
+* Changes remain staged
+
+---
+### Scenario 4: Undo Last Commit (Keep Changes Unstaged)
+**Command:**
+
+```
+git reset HEAD~1
+```
+
+**Result:**
+
+* Last commit deleted
+* Changes remain in working directory
+
+---
+
+### Scenario 5: Delete Last Commit Completely
+
+**Command:**
+
+```
+git reset --hard HEAD~1
+```
+
+**Result:**
+
+* Commit deleted
+* File changes deleted
+
+---
+
+### Scenario 6: Reset Multiple Commits
+
+**Command:**
+
+```
+git reset --soft HEAD~3
+
+git reset --hard HEAD~3
+```
+
+**Result:**
+
+* HEAD moves back by 3 commits
+* Commits removed based on mode
+
+---
+
+### Scenario 7: Reset After Push (Private Branch)
+
+**Command:**
+
+```
+git reset --hard
+
+git push --force-with-lease
+```
+
+**Result:**
+
+* Remote history rewritten
+* Safe **ONLY** if you are the sole user
+
+---
+
+### Scenario 8: Reset After Push (Shared Branch) ❌
+
+**Command (WRONG):**
+
+```
+git reset --hard
+
+git push --force
+```
+
+**Why ❌:**
+
+* Breaks teammates’ branches
+* Deletes shared history
+
+**Correct Approach ✔:**
+
+* Use `git revert` instead
+
+---
+
+### Scenario 9: Reset Caused Mistake (Recovery)
+
+**Use Reflog:**
+
+```
+git reflog
+```
+
+**Restore:**
+
+```
+git reset --hard <commit>
+```
+
+* Possible within reflog expiry (30–90 days)
+
+---
+
+# RESET VS REVERT
+
+| Aspect  | **Reset**                 | **Revert**              |
+| ------- | ------------------------- | ----------------------- |
+| Commits | Deletes commits           | Adds new commit         |
+| History | Rewrites history          | Preserves history       |
+| Safety  | Unsafe on shared branches | Safe on shared branches |
+
+---
+
+# COMMON MISTAKES
+
+❌ Using `--hard` blindly
+❌ Resetting main branch
+❌ Force pushing without coordination
+❌ Forgetting reflog recovery
+
+---
+
+# MENTAL MODEL
+
+```
+--soft → HEAD only
+--mixed → HEAD + index
+--hard → HEAD + index + files
+```
+
+---
+
+# INTERVIEW ONE-LINER
+
+*"git reset rewrites history by moving HEAD backward and is safe only on local or private branches, while git revert is safe for shared branches."*
