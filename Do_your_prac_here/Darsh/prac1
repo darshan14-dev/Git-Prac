@@ -105,7 +105,7 @@ feature:                    D' --- E'
 REBASED WRONG FEATURES – QUICK GUIDE
 --------------------------------
 
-1️⃣ Rebased LOCALLY (NOT pushed) ✅
+1️⃣ Rebased LOCALLY (NOT pushed)
 --------------------------------
 Undo easily:
 
@@ -116,7 +116,7 @@ git reset --hard HEAD@{n}
 ✔ Old commits recovered
 
 
-2️⃣ Rebased AND ALREADY PUSHED ⚠️
+2️⃣ Rebased AND ALREADY PUSHED ⚠
 
 A) Only YOU use the branch
 --------------------------------
@@ -125,7 +125,7 @@ git push --force
 ✔ Safe if no one else pulled
 
 
-B) SHARED branch ❌ (Best Practice)
+B) SHARED branch  (Best Practice)
 --------------------------------
 DO NOT force push
 
@@ -153,7 +153,7 @@ Options:
 - squash → combine commits
 
 
-4️⃣ Reflog EXPIRED ❌ (Worst Case)
+4️⃣ Reflog EXPIRED  (Worst Case)
 --------------------------------
 • No branch or tag exists
 • Garbage Collection (GC) ran
@@ -212,7 +212,7 @@ Git asks for a SINGLE commit message:
 
 Add login page with bug fixes and UI updates
 
-Save → Squash completed ✅
+Save → Squash completed
 
 
 3️⃣ How Squash Works INTERNALLY (VERY IMPORTANT)
@@ -602,3 +602,135 @@ git reset --hard <commit>
 # INTERVIEW ONE-LINER
 
 *"git reset rewrites history by moving HEAD backward and is safe only on local or private branches, while git revert is safe for shared branches."*
+
+
+
+GIT FETCH, REMOTE-TRACKING BRANCH, MERGE, AND REBASE
+==================================================
+
+1. BASIC TERMINOLOGY
+-------------------
+
+Local Repository:
+- Your machine’s Git repository
+- Contains your working code and local branches
+
+Remote Repository:
+- Central/shared repository (e.g., GitHub, GitLab)
+- Example remote name: origin or remote
+
+Local Branch:
+- A branch you actively work on
+- Example: main
+
+Remote-Tracking Branch:
+- A local, read-only reference to a remote branch
+- Example: origin/main or remote/main
+
+
+3. WHAT DOES `git fetch` DO?
+----------------------------
+
+Command:
+git fetch <remote-name>
+
+Example:
+git fetch remote
+
+What it DOES:
+- Connects to the remote repository
+- Downloads new commits
+- Updates remote-tracking branches (remote/main)
+
+What it DOES NOT do:
+- Does NOT modify local branches
+- Does NOT change working directory
+- Does NOT merge
+- Does NOT rebase
+- Does NOT create commits
+
+This is why git fetch is considered SAFE.
+
+
+4. STATE BEFORE AND AFTER FETCH
+-------------------------------
+
+Before fetch:
+
+Local branch:
+local/main:      A --- B --- D
+
+Remote-tracking branch:
+remote/main:     A --- B --- C
+
+
+After git fetch remote:
+
+Local branch (unchanged):
+local/main:      A --- B --- D
+
+Remote-tracking branch (updated):
+remote/main:     A --- B --- C --- E
+
+
+5. WHY DOES `remote/main` MOVE AFTER FETCH?
+-------------------------------------------
+
+Because:
+- remote/main is Git’s local reference to the remote branch
+- git fetch updates this reference to match the remote’s latest commit
+- Your local branch is NOT touched automatically
+
+Key idea:
+Fetch updates INFORMATION, not CODE.
+
+
+6. WHAT HAPPENS AFTER FETCH?
+----------------------------
+
+After fetching, you decide how to integrate the changes.
+
+
+6.1 MERGE
+---------
+
+6.2 REBASE
+----------
+
+
+7. RELATION BETWEEN FETCH, MERGE, REBASE, AND PULL
+-------------------------------------------------
+
+git fetch
+- Downloads changes only
+
+git merge
+- Integrates changes using a merge commit
+
+git rebase
+- Integrates changes by replaying commits
+
+git pull
+- git fetch + git merge (default behavior)
+
+git pull --rebase
+- git fetch + git rebase
+
+
+8. COMPLETE WORKFLOW SUMMARY
+----------------------------
+
+Step 1:
+git fetch
+→ Updates remote-tracking branches
+
+Step 2:
+git merge OR git rebase
+→ Applies remote changes to the local branch
+
+Golden Rule:
+Fetch updates references.
+Merge/Rebase updates your branch and code.
+
+
+
