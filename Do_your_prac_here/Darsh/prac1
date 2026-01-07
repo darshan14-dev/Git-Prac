@@ -734,3 +734,222 @@ Merge/Rebase updates your branch and code.
 
 
 
+
+GIT CHERRY-PICK — COMPLETE, STRUCTURED EXPLANATION
+==================================================
+
+1. WHAT IS GIT CHERRY-PICK?
+--------------------------
+
+Definition:
+git cherry-pick applies the changes introduced by one (or more) specific
+commit(s) onto the current branch by creating new commits.
+
+Command:
+git cherry-pick <commit-hash>
+
+Important:
+Cherry-pick COPIES a commit.
+It does NOT move the original commit.
+
+
+2. WHAT ACTUALLY HAPPENS INTERNALLY?
+-----------------------------------
+
+When you cherry-pick a commit:
+
+- Git takes the DIFF (changes) of that commit
+- Applies those changes on your current branch
+- Creates a NEW commit with a NEW hash
+
+So:
+Original commit ≠ Cherry-picked commit
+(only the changes are the same)
+
+
+3. BASIC EXAMPLE
+----------------
+
+Initial state:
+
+main:          A --- B --- C
+feature:       A --- B --- D --- E
+
+You want ONLY commit D in main.
+
+Command (on main):
+git cherry-pick D
+
+Result:
+
+main:          A --- B --- C --- D'
+feature:       A --- B --- D --- E
+
+Key points:
+- D' is a NEW commit
+- D still exists on feature branch
+- History is NOT merged
+
+
+4. CHERRY-PICK WITH --NO-COMMIT
+--------------------------------
+
+Sometimes you want to **apply changes without committing immediately**, e.g., to squash multiple cherry-picks into one commit.
+
+Command:
+git cherry-pick --no-commit <commit-hash>
+or
+git cherry-pick -n <commit-hash>
+
+Behavior:
+- Applies changes from the commit to working directory and staging area
+- Does NOT create a commit
+- Lets you make additional edits or combine multiple cherry-picks
+- You need to commit manually:
+
+git commit -m "Combined commit"
+
+
+5. IMPORTANT PROPERTIES
+-----------------------
+
+- Cherry-pick works on individual commits
+- Creates new commit hashes (unless --no-commit, then you commit later)
+- Preserves changes, not history
+- Can cause conflicts
+- Safe for selective fixes
+
+
+6. MULTIPLE CHERRY-PICKS
+------------------------
+
+Pick multiple commits:
+
+git cherry-pick D E
+
+Pick a range (exclusive → inclusive):
+
+git cherry-pick D^..F
+
+With --no-commit:
+
+git cherry-pick -n D E
+# then commit manually after combining
+
+
+7. CONFLICTS DURING CHERRY-PICK
+--------------------------------
+
+If conflicts occur:
+
+1. Git pauses cherry-pick
+2. You resolve conflicts manually
+3. Stage resolved files
+4. Continue:
+
+git cherry-pick --continue
+
+Abort cherry-pick:
+git cherry-pick --abort
+
+
+8. WHEN SHOULD YOU USE CHERRY-PICK?
+-----------------------------------
+
+SCENARIO 1: HOTFIX FROM FEATURE TO MAIN
+---------------------------------------
+
+- Bug fixed in feature branch
+- Only ONE commit is needed in main
+- You don’t want full feature
+
+Use cherry-pick ✅
+
+SCENARIO 2: BACKPORTING A FIX
+-----------------------------
+
+- Bug fixed in main
+- Need same fix in release or production branch
+
+Use cherry-pick ✅
+
+SCENARIO 3: SELECTIVE COMMITS
+-----------------------------
+
+- Feature branch has many commits
+- You want only specific, stable ones
+
+Use cherry-pick ✅
+
+
+9. WHEN NOT TO USE CHERRY-PICK
+------------------------------
+
+❌ To integrate an entire branch
+❌ When commit order matters deeply
+❌ On long-lived shared branches (can duplicate history)
+❌ When merge or rebase is cleaner
+
+
+10. CHERRY-PICK vs MERGE vs REBASE
+---------------------------------
+
+MERGE:
+- Brings entire branch
+- Preserves history
+- No commit rewriting
+
+REBASE:
+- Rewrites history
+- Replays all commits
+- Clean linear history
+
+CHERRY-PICK:
+- Copies selected commits
+- Creates new commits
+- No branch relationship preserved
+
+
+11. DANGERS OF CHERRY-PICK
+--------------------------
+
+- Duplicate commits can occur
+- Same fix may exist twice with different hashes
+- Can cause future merge conflicts
+
+Rule:
+If you cherry-pick a commit, avoid merging the same branch later.
+
+
+12. HOW TO IDENTIFY A CHERRY-PICKED COMMIT
+------------------------------------------
+
+Git message:
+(cherry picked from commit <hash>)
+
+Use:
+git log --cherry
+
+
+13. INTERVIEW-READY ONE-LINERS
+------------------------------
+
+- "Cherry-pick applies a specific commit’s changes onto another branch."
+- "Cherry-pick copies commits; it does not move them."
+- "Cherry-pick creates new commit hashes."
+- "Use cherry-pick for hotfixes and backporting."
+- "--no-commit option applies changes without committing, allowing manual adjustments or combining commits."
+
+
+14. FINAL MENTAL MODEL
+----------------------
+
+MERGE   → bring everything
+REBASE  → replay everything
+CHERRY  → pick exactly what you want
+
+
+END OF FILE
+
+
+
