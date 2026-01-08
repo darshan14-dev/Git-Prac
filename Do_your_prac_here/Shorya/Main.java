@@ -4,5 +4,11 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Hi Prajwal!");
         System.out.println("Hello World!");
+
+        sayName("Prajwal");
+        
+    }
+    public static void sayName(String name){
+        System.out.println("Hello"+ name);
     }
 }
